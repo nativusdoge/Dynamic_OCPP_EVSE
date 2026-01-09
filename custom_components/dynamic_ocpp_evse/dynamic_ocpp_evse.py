@@ -76,8 +76,8 @@ def apply_ramping(self, state, target_evse, min_current):
         if not hasattr(self, '_last_ramp_time'):
             self._last_ramp_time = None
 
-        ramp_limit_up = 0.05   # Amps per second (ramp up)
-        ramp_limit_down = 0.2 # Amps per second (ramp down, faster)
+        ramp_limit_up = 0.3   # Amps per second (ramp up)
+        ramp_limit_down = 0.6 # Amps per second (ramp down, faster)
         now = datetime.datetime.now()
         
         ramp_enabled = True

@@ -16,7 +16,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
     entity_id = config_entry.data[CONF_ENTITY_ID]
 
     # Fetch the initial update frequency from the configuration
-    update_frequency = config_entry.data.get(CONF_UPDATE_FREQUENCY, 10)  # Default to 5 seconds if not set
+    update_frequency = config_entry.data.get(CONF_UPDATE_FREQUENCY, 5)  # Default to 5 seconds if not set
     _LOGGER.info(f"Initial update frequency: {update_frequency} seconds")
 
     async def async_update_data():
