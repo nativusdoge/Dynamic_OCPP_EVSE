@@ -15,6 +15,7 @@ class ChargeContext:
     grid_phase_a_current: float
     grid_phase_b_current: float
     grid_phase_c_current: float
+    grid_evse_single_phase_current: float
     phase_a_export_current: float
     phase_b_export_current: float
     phase_c_export_current: float
@@ -353,6 +354,7 @@ def get_state_config(self):
     state[CONF_MAIN_BREAKER_RATING] = self.config_entry.data.get(CONF_MAIN_BREAKER_RATING)
     state[CONF_INVERT_PHASES] = self.config_entry.data.get(CONF_INVERT_PHASES)
     state[CONF_CHARING_MODE] = get_sensor_data(self, self.config_entry.data.get(CONF_CHARGIN_MODE_ENTITY_ID))
+    state[CONF_EVSE_SINGLE_PHASE] = self.config_entry.data.get(CONF_EVSE_SINGLE_PHASE)
     
     # Get phase voltage for power-to-current conversion
     voltage = self.config_entry.data.get(CONF_PHASE_VOLTAGE, 230)
@@ -389,6 +391,12 @@ def get_state_config(self):
     else:
         state[CONF_PHASE_C_CURRENT] = 0  # Default to 0 for single-phase setups
     
+    evse_single_phase_entity = self.config_entry.data.get(CONF_EVSE_SINGLE_PHASE_CURRENT_ENTITY_ID)
+    if evse_single_phase_entity and evse_single_phase_entity != 'None':
+        state[CONF_EVSE_SINGLE_PHASE_CURRENT] = get_phase_current(evse_single_phase_entity)
+    else:
+        state[CONF_EVSE_SINGLE_PHASE_CURRENT] = 0  # Default to 0 for single-phase setups
+
     state[CONF_EVSE_CURRENT_IMPORT] = get_sensor_data(self, self.config_entry.data.get(CONF_EVSE_CURRENT_IMPORT_ENTITY_ID))
     state[CONF_EVSE_CURRENT_OFFERED] = get_sensor_data(self, self.config_entry.data.get(CONF_EVSE_CURRENT_OFFERED_ENTITY_ID))
     state[CONF_MAX_IMPORT_POWER] = get_sensor_data(self, self.config_entry.data.get(CONF_MAX_IMPORT_POWER_ENTITY_ID))
@@ -443,6 +451,7 @@ def get_charge_context_values(self, state):
     phase_a_current = state[CONF_PHASE_A_CURRENT] if state[CONF_PHASE_A_CURRENT] is not None and is_number(state[CONF_PHASE_A_CURRENT]) else 0
     phase_b_current = state[CONF_PHASE_B_CURRENT] if state[CONF_PHASE_B_CURRENT] is not None and is_number(state[CONF_PHASE_B_CURRENT]) else 0
     phase_c_current = state[CONF_PHASE_C_CURRENT] if state[CONF_PHASE_C_CURRENT] is not None and is_number(state[CONF_PHASE_C_CURRENT]) else 0
+    evse_single_phase_current = state[CONF_EVSE_SINGLE_PHASE_CURRENT] if state[CONF_EVSE_SINGLE_PHASE_CURRENT] is not None and is_number(state[CONF_EVSE_SINGLE_PHASE_CURRENT]) else 0
     
     # Calculate total export current (sum of negative phase currents)
     total_export_current = (
@@ -452,10 +461,11 @@ def get_charge_context_values(self, state):
     )
     total_export_power = total_export_current * voltage
     if state[CONF_INVERT_PHASES]:
-        phase_a_current, phase_b_current, phase_c_current = -phase_a_current, -phase_b_current, -phase_c_current
+        phase_a_current, phase_b_current, phase_c_current, evse_single_phase_current = -phase_a_current, -phase_b_current, -phase_c_current, -evse_single_phase_current
     grid_phase_a_current = phase_a_current
     grid_phase_b_current = phase_b_current
     grid_phase_c_current = phase_c_current
+    grid_evse_single_phase_current = evse_single_phase_current
     phase_a_import_current = max(grid_phase_a_current, 0)
     phase_b_import_current = max(grid_phase_b_current, 0)
     phase_c_import_current = max(grid_phase_c_current, 0)
@@ -484,6 +494,7 @@ def get_charge_context_values(self, state):
         grid_phase_a_current=grid_phase_a_current,
         grid_phase_b_current=grid_phase_b_current,
         grid_phase_c_current=grid_phase_c_current,
+        grid_evse_single_phase_current=grid_evse_single_phase_current,
         phase_a_export_current=phase_a_export_current,
         phase_b_export_current=phase_b_export_current,
         phase_c_export_current=phase_c_export_current,

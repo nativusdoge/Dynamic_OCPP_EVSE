@@ -19,6 +19,8 @@
                         "evse": {
                                 "description": "Configure EVSE related options",
                                 "data": {
+                                        "evse_single_phase": "Single Phase EVSE in a multi-phase power setup",
+                                        "evse_single_phase_current_entity_id": "Sensor that measures grid current for single phase EVSE (optional - set to 'None' for single-phase setups)",
                                         "evse_minimum_charge_current": "EVSE Minimum Charge Current (A)",
                                         "evse_maximum_charge_current": "EVSE Maximum Charge Current (A)",
                                         "evse_current_import_entity_id": "Sensor that measures the current imported by the EVSE (What car acctually uses, sum of all phases)",
