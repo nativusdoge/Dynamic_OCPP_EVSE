@@ -175,45 +175,49 @@ class DynamicOcppEvseSensor(SensorEntity):
                 limit = round(self._state, 1)
                 self._pause_timer_running = False
 
-            self._last_set_current = limit
+            # Only send an update if there is a change in limit
+            if self._last_set_current != limit:
 
-            # Prepare the data for the OCPP set_charge_rate service
-            profile_timeout = self.config_entry.data.get(CONF_OCPP_PROFILE_TIMEOUT, 15)  # Default to 15 seconds if not set
-            valid_from = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
-            valid_to = (datetime.utcnow() + timedelta(seconds=profile_timeout)).isoformat(timespec='seconds') + 'Z'
-            # Get stackLevel from config, default to 2 if not set
-            stack_level = self.config_entry.data.get(CONF_STACK_LEVEL, 2)
-            
-            charging_profile = {
-                "chargingProfileId": 11,
-                "stackLevel": stack_level,
-                "chargingProfileKind": "Relative",
-                "chargingProfilePurpose": "TxDefaultProfile",
-                "validFrom": valid_from,
-                "validTo": valid_to,
-                "chargingSchedule": {
-                    "chargingRateUnit": "A",
-                    "chargingSchedulePeriod": [
-                        {
-                            "startPeriod": 0,
-                            "limit": limit
-                        }
-                    ]
+                self._last_set_current = limit
+
+                # Prepare the data for the OCPP set_charge_rate service
+                profile_timeout = self.config_entry.data.get(CONF_OCPP_PROFILE_TIMEOUT, 15)  # Default to 15 seconds if not set
+                valid_from = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+                valid_to = (datetime.utcnow() + timedelta(seconds=profile_timeout)).isoformat(timespec='seconds') + 'Z'
+                # Get stackLevel from config, default to 2 if not set
+                stack_level = self.config_entry.data.get(CONF_STACK_LEVEL, 2)
+                
+                charging_profile = {
+                    "chargingProfileId": 11,
+                    "stackLevel": stack_level,
+                    "chargingProfileKind": "Relative",
+                    "chargingProfilePurpose": "TxDefaultProfile",
+                    #"validFrom": valid_from,
+                    #"validTo": valid_to,
+                    "chargingSchedule": {
+                        "chargingRateUnit": "A",
+                        "chargingSchedulePeriod": [
+                            {
+                                "startPeriod": 0,
+                                "limit": limit
+                            }
+                        ]
+                    }
                 }
-            }
 
-            # Log the data being sent
-            _LOGGER.debug(f"Sending set_charge_rate with data: {charging_profile}")
+                # Log the data being sent
+                _LOGGER.debug(f"Sending set_charge_rate with data: {charging_profile}")
 
-            # Call the OCPP set_charge_rate service
-            await self.hass.services.async_call(
-                "ocpp",
-                "set_charge_rate",
-                {
-                    "custom_profile": charging_profile
-                }
-            )
-            # Update the last update timestamp
-            self._last_update = datetime.utcnow()
+                # Call the OCPP set_charge_rate service
+                await self.hass.services.async_call(
+                    "ocpp",
+                    "set_charge_rate",
+                    {
+                        "custom_profile": charging_profile
+                    }
+                )
+                # Update the last update timestamp
+                self._last_update = datetime.utcnow()
+
         except Exception as e:
             _LOGGER.error(f"Error updating Dynamic OCPP EVSE Sensor: {e}", exc_info=True)
