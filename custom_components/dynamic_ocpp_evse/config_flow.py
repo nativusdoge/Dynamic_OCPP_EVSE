@@ -212,8 +212,8 @@ class DynamicOcppEvseConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         
         data_schema = vol.Schema(
             {
-                vol.required(CONF_EVSE_SINGLE_PHASE, default=entry.data.get(CONF_EVSE_SINGLE_PHASE, False) if entry else False): bool,
-                vol.optional(CONF_EVSE_SINGLE_PHASE_CURRENT_ENTITY_ID, default=entry.data.get(CONF_EVSE_SINGLE_PHASE_CURRENT_ENTITY_ID, 'None') if entry else 'None'): selector({"entity": {"domain": "sensor", "device_class": ["current", "power"]}}),
+                vol.Required(CONF_EVSE_SINGLE_PHASE, default=entry.data.get(CONF_EVSE_SINGLE_PHASE, False) if entry else False): bool,
+                vol.Optional(CONF_EVSE_SINGLE_PHASE_CURRENT_ENTITY_ID, default=entry.data.get(CONF_EVSE_SINGLE_PHASE_CURRENT_ENTITY_ID, 'None') if entry else 'None'): selector({"entity": {"domain": "sensor", "device_class": ["current", "power"]}}),
                 vol.Required(CONF_EVSE_MINIMUM_CHARGE_CURRENT, default=initial_data[CONF_EVSE_MINIMUM_CHARGE_CURRENT]): int,
                 vol.Required(CONF_EVSE_MAXIMUM_CHARGE_CURRENT, default=initial_data[CONF_EVSE_MAXIMUM_CHARGE_CURRENT]): int,
                 vol.Required(CONF_EVSE_CURRENT_IMPORT_ENTITY_ID, default=initial_data[CONF_EVSE_CURRENT_IMPORT_ENTITY_ID]): selector({"entity": {"domain": "sensor", "device_class": "current"}}),
