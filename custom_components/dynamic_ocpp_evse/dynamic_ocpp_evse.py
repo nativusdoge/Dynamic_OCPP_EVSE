@@ -289,9 +289,6 @@ def calculate_solar_mode(context: ChargeContext, target_import_current=0):
     # If grid charging is not allowed, set available import current to 0
     if not context.allow_grid_charging:
         remaining_available_import_current = 0
-    elif state[CONF_EVSE_SINGLE_PHASE]:
-        # Only check the phase the EVSE is on
-        remaining_available_import_current = target_import_current - context.phase_e_import_current
     else:
         remaining_available_import_current = target_import_current - context.total_import_current
 
