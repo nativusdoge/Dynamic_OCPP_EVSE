@@ -383,7 +383,7 @@ def get_state_config(self):
         state[CONF_PHASES] = None
     state[CONF_MAIN_BREAKER_RATING] = self.config_entry.data.get(CONF_MAIN_BREAKER_RATING)
     state[CONF_INVERT_PHASES] = self.config_entry.data.get(CONF_INVERT_PHASES)
-    state[CONF_CHARING_MODE] = get_sensor_data(self, self.config_entry.data.get(CONF_CHARGIN_MODE_ENTITY_ID))
+    state[CONF_CHARGING_MODE] = get_sensor_data(self, self.config_entry.data.get(CONF_CHARGING_MODE_ENTITY_ID))
     state[CONF_EVSE_SINGLE_PHASE] = self.config_entry.data.get(CONF_EVSE_SINGLE_PHASE)
     
     # Get phase voltage for power-to-current conversion
@@ -530,7 +530,7 @@ def get_charge_context_values(self, state):
         max_evse_available=0,  # will be set after calculation
         min_current=min_current,
         max_current=max_current,
-        total_export_current=total_export_current
+        total_export_current=total_export_current,
         total_export_power=total_export_power,
         battery_soc=battery_soc,
         battery_power=battery_power,
@@ -569,13 +569,13 @@ def calculate_available_current(self):
     target_evse_solar = calculate_solar_mode(charge_context)
     target_evse_excess = calculate_excess_mode(self, charge_context)
 
-    if state[CONF_CHARING_MODE] == 'Standard':
+    if state[CONF_CHARGING_MODE] == 'Standard':
         target_evse = target_evse_standard
-    elif state[CONF_CHARING_MODE] == 'Eco':
+    elif state[CONF_CHARGING_MODE] == 'Eco':
         target_evse = target_evse_eco
-    elif state[CONF_CHARING_MODE] == 'Solar':
+    elif state[CONF_CHARGING_MODE] == 'Solar':
         target_evse = target_evse_solar
-    elif state[CONF_CHARING_MODE] == 'Excess':
+    elif state[CONF_CHARGING_MODE] == 'Excess':
         target_evse = target_evse_excess
 
     # Clamp target_evse to CONF_MAX_CURRENT
@@ -595,7 +595,7 @@ def calculate_available_current(self):
     return {
         CONF_AVAILABLE_CURRENT: round(state[CONF_AVAILABLE_CURRENT], 1),
         CONF_PHASES: charge_context.phases,
-        CONF_CHARING_MODE: state[CONF_CHARING_MODE],
+        CONF_CHARGING_MODE: state[CONF_CHARGING_MODE],
         'calc_used': getattr(charge_context, 'calc_used', None),
         'max_evse_available': max_evse_available,
         'target_evse': target_evse,

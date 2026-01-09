@@ -27,7 +27,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, asyn
         return {
             CONF_AVAILABLE_CURRENT: temp_sensor._state,
             CONF_PHASES: temp_sensor._phases,
-            CONF_CHARING_MODE: temp_sensor._charging_mode,
+            CONF_CHARGING_MODE: temp_sensor._charging_mode,
             "calc_used": temp_sensor._calc_used,
             "max_evse_available": temp_sensor._max_evse_available,
         }
@@ -111,7 +111,7 @@ class DynamicOcppEvseSensor(SensorEntity):
         attrs = {
             "state_class": "measurement",
             CONF_PHASES: self._phases,
-            CONF_CHARING_MODE: self._charging_mode,
+            CONF_CHARGING_MODE: self._charging_mode,
             "calc_used": self._calc_used,
             "max_evse_available": self._max_evse_available,
             "last_update": self._last_update,
@@ -140,7 +140,7 @@ class DynamicOcppEvseSensor(SensorEntity):
             data = calculate_available_current(self)
             self._state = data[CONF_AVAILABLE_CURRENT]
             self._phases = data[CONF_PHASES]
-            self._charging_mode = data[CONF_CHARING_MODE]
+            self._charging_mode = data[CONF_CHARGING_MODE]
             self._calc_used = data["calc_used"]
             self._max_evse_available = data["max_evse_available"]
             self._target_evse = data["target_evse"]

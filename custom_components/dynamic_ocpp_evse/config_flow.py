@@ -56,7 +56,7 @@ class DynamicOcppEvseConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_show_form(
                     step_id="grid", data_schema=step_grid_data_schema, errors=errors, last_step=False
                 )
-            user_input[CONF_CHARGIN_MODE_ENTITY_ID] = f"select.{entity_id}_charging_mode"
+            user_input[CONF_CHARGING_MODE_ENTITY_ID] = f"select.{entity_id}_charging_mode"
             user_input[CONF_MIN_CURRENT_ENTITY_ID] = f"number.{entity_id}_min_current"
             user_input[CONF_MAX_CURRENT_ENTITY_ID] = f"number.{entity_id}_max_current"
             user_input[CONF_BATTERY_SOC_TARGET_ENTITY_ID] = f"number.{entity_id}_home_battery_soc_target"
