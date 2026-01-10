@@ -482,15 +482,10 @@ def get_charge_context_values(self, state):
     # EVSE single phase current
     phase_e_current = state[CONF_PHASE_E_CURRENT] if state[CONF_PHASE_E_CURRENT] is not None and is_number(state[CONF_PHASE_E_CURRENT]) else 0
     
-    # Calculate total export current (sum of negative phase currents)
-    total_export_current = (
-        max(-phase_a_current, 0) +
-        max(-phase_b_current, 0) +
-        max(-phase_c_current, 0)
-    )
-    total_export_power = total_export_current * voltage
+    # Invert phase currents if configured
     if state[CONF_INVERT_PHASES]:
         phase_a_current, phase_b_current, phase_c_current, phase_e_current = -phase_a_current, -phase_b_current, -phase_c_current, -phase_e_current
+
     grid_phase_a_current = phase_a_current
     grid_phase_b_current = phase_b_current
     grid_phase_c_current = phase_c_current
@@ -501,6 +496,15 @@ def get_charge_context_values(self, state):
     phase_e_import_current = max(grid_phase_e_current, 0)
     total_import_current = phase_a_import_current + phase_b_import_current + phase_c_import_current
     evse_current = state[CONF_EVSE_CURRENT_IMPORT]
+
+    # Calculate total export current (sum of negative phase currents)
+    total_export_current = (
+        max(-phase_a_current, 0) +
+        max(-phase_b_current, 0) +
+        max(-phase_c_current, 0)
+    )
+    total_export_power = total_export_current * voltage
+
     if evse_current is None or not is_number(evse_current):
         evse_current = 0
     # phases is always 1-3 at this point, so no need for additional checks
