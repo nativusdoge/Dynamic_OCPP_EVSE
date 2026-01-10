@@ -111,7 +111,7 @@ def apply_ramping(self, state, target_evse, min_current):
 def calculate_max_evse_available(context: ChargeContext):
     state = context.state
     max_import_power = state[CONF_MAX_IMPORT_POWER]
-    max_import_current = int(max_import_power) / context.voltage
+    max_import_current = max_import_power / context.voltage
     
     if state[CONF_EVSE_SINGLE_PHASE]:
         # Only check the phase the EVSE is on
@@ -133,7 +133,7 @@ def calculate_max_evse_available(context: ChargeContext):
     # Battery discharge logic
     battery_power = context.battery_power if context.battery_power is not None else 0
     battery_max_discharge_power = context.battery_max_discharge_power if context.battery_max_discharge_power is not None else 0
-    battery_soc = float(context.battery_soc.strip('%')) if context.battery_soc is not None else 0
+    battery_soc = context.battery_soc if context.battery_soc is not None else 0
     battery_soc_target = context.battery_soc_target if context.battery_soc_target is not None else 0
 
     # Only allow battery discharge if SOC > SOC target
