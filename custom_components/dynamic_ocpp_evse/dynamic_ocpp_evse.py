@@ -431,6 +431,8 @@ def get_state_config(self):
     state[CONF_PHASE_VOLTAGE] = voltage
     state[CONF_EVSE_MINIMUM_CHARGE_CURRENT] = self.config_entry.data.get(CONF_EVSE_MINIMUM_CHARGE_CURRENT, 6)
     state[CONF_EVSE_MAXIMUM_CHARGE_CURRENT] = self.config_entry.data.get(CONF_EVSE_MAXIMUM_CHARGE_CURRENT, 16)
+    state[CONF_MIN_CURRENT] = get_sensor_data(self, self.config_entry.data.get(CONF_MIN_CURRENT_ENTITY_ID))
+    state[CONF_MAX_CURRENT] = get_sensor_data(self, self.config_entry.data.get(CONF_MAX_CURRENT_ENTITY_ID))
     state[CONF_EXCESS_EXPORT_THRESHOLD] = self.config_entry.data.get(CONF_EXCESS_EXPORT_THRESHOLD, 13600)
     
     # Read battery values if entities are set
@@ -468,8 +470,8 @@ def get_state_config(self):
     return state
 
 def get_charge_context_values(self, state):
-    min_current = state[CONF_EVSE_MINIMUM_CHARGE_CURRENT]
-    max_current = state[CONF_EVSE_MAXIMUM_CHARGE_CURRENT]
+    min_current = state[CONF_MIN_CURRENT] if state[CONF_MIN_CURRENT] is not None else state[CONF_EVSE_MINIMUM_CHARGE_CURRENT]
+    max_current = state[CONF_MAX_CURRENT] if state[CONF_MAX_CURRENT] is not None else state[CONF_EVSE_MAXIMUM_CHARGE_CURRENT]
     phases, calc_used = determine_phases(self, state)
     voltage = state[CONF_PHASE_VOLTAGE] if state[CONF_PHASE_VOLTAGE] is not None and is_number(state[CONF_PHASE_VOLTAGE]) else 230
     
@@ -480,10 +482,15 @@ def get_charge_context_values(self, state):
     # EVSE single phase current
     phase_e_current = state[CONF_PHASE_E_CURRENT] if state[CONF_PHASE_E_CURRENT] is not None and is_number(state[CONF_PHASE_E_CURRENT]) else 0
     
-    # Invert phase currents if configured
+    # Calculate total export current (sum of negative phase currents)
+    total_export_current = (
+        max(-phase_a_current, 0) +
+        max(-phase_b_current, 0) +
+        max(-phase_c_current, 0)
+    )
+    total_export_power = total_export_current * voltage
     if state[CONF_INVERT_PHASES]:
         phase_a_current, phase_b_current, phase_c_current, phase_e_current = -phase_a_current, -phase_b_current, -phase_c_current, -phase_e_current
-
     grid_phase_a_current = phase_a_current
     grid_phase_b_current = phase_b_current
     grid_phase_c_current = phase_c_current
@@ -494,15 +501,6 @@ def get_charge_context_values(self, state):
     phase_e_import_current = max(grid_phase_e_current, 0)
     total_import_current = phase_a_import_current + phase_b_import_current + phase_c_import_current
     evse_current = state[CONF_EVSE_CURRENT_IMPORT]
-
-    # Calculate total export current (sum of negative phase currents)
-    total_export_current = (
-        max(-phase_a_current, 0) +
-        max(-phase_b_current, 0) +
-        max(-phase_c_current, 0)
-    )
-    total_export_power = total_export_current * voltage
-
     if evse_current is None or not is_number(evse_current):
         evse_current = 0
     # phases is always 1-3 at this point, so no need for additional checks
@@ -577,7 +575,7 @@ def calculate_available_current(self):
     elif state[CONF_CHARGING_MODE] == 'Excess':
         target_evse = target_evse_excess
 
-    # Clamp target_evse to CONF_EVSE_MAXIMUM_CHARGE_CURRENT
+    # Clamp target_evse to CONF_MAX_CURRENT
     target_evse = min(target_evse, charge_context.max_current, max_evse_available)
 
     # Clamp to available

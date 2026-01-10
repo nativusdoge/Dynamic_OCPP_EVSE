@@ -5,7 +5,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
-from .const import DOMAIN, CONF_EVSE_MINIMUM_CHARGE_CURRENT, CONF_EVSE_MAXIMUM_CHARGE_CURRENT, CONF_POWER_BUFFER
+from .const import DOMAIN, CONF_MIN_CURRENT, CONF_MAX_CURRENT, CONF_EVSE_MINIMUM_CHARGE_CURRENT, CONF_EVSE_MAXIMUM_CHARGE_CURRENT, CONF_POWER_BUFFER
 
 _LOGGER = logging.getLogger(__name__)
 

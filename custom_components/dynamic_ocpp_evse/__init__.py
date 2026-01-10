@@ -99,6 +99,8 @@ async def _migrate_entities_if_needed(hass: HomeAssistant, entry: ConfigEntry):
         
         # Update the config entry to ensure it has the required entity IDs
         updated_data = dict(entry.data)
+        updated_data[CONF_MIN_CURRENT_ENTITY_ID] = f"number.{entity_id}_min_current"
+        updated_data[CONF_MAX_CURRENT_ENTITY_ID] = f"number.{entity_id}_max_current"
         updated_data[CONF_BATTERY_SOC_TARGET_ENTITY_ID] = f"number.{entity_id}_home_battery_soc_target"
         updated_data[CONF_CHARGING_MODE_ENTITY_ID] = f"select.{entity_id}_charging_mode"
         updated_data[CONF_ALLOW_GRID_CHARGING_ENTITY_ID] = f"switch.{entity_id}_allow_grid_charging"
