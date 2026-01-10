@@ -19,8 +19,6 @@ CONF_UPDATE_FREQUENCY = "update_frequency"
 CONF_OCPP_PROFILE_TIMEOUT = "ocpp_profile_timeout"
 CONF_CHARGE_PAUSE_DURATION = "charge_pause_duration"
 CONF_STACK_LEVEL = "stack_level"
-CONF_MIN_CURRENT_ENTITY_ID = "min_current_entity_id"
-CONF_MAX_CURRENT_ENTITY_ID = "max_current_entity_id"	
 
 # sensor attributes
 CONF_PHASES = "phases"
@@ -35,8 +33,6 @@ CONF_EVSE_MAXIMUM_CHARGE_CURRENT = "evse_maximum_charge_current"  # defaults to 
 CONF_EVSE_CURRENT_IMPORT = "evse_current_import"
 CONF_EVSE_CURRENT_OFFERED = "evse_current_offered"
 CONF_MAX_IMPORT_POWER = "max_import_power"
-CONF_MIN_CURRENT = "min_current"
-CONF_MAX_CURRENT = "max_current"
 CONF_EXCESS_EXPORT_THRESHOLD = "excess_export_threshold"  # Maximum allowed export before charging starts in Excess mode
 
 # Battery support configuration constants
